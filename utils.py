@@ -1,4 +1,3 @@
-from typing import Any
 import psycopg2
 
 from cls import Employer, Vacancy

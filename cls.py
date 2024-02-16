@@ -1,3 +1,5 @@
+from cfg import config
+import psycopg2
 import requests
 
 from cfg import EMPLOYERS_URL, VACANCIES_URL
@@ -76,3 +78,98 @@ class Vacancy:
         if not salary_to:
             salary_to = salary_from
         return salary_to
+
+
+class DBManager:
+
+    @classmethod
+    def get_companies_and_vacancies_count(cls, database_name):
+        params = config()
+        conn = psycopg2.connect(dbname=database_name, **params)
+        with conn.cursor() as cur:
+            cur.execute("""
+            SELECT employers.employer_name as employer, COUNT(*)
+            FROM employers
+            JOIN vacancies using (employer_id)
+            GROUP BY employer
+            """)
+            response = cur.fetchall()
+        for r in response:
+            print(f"{r[0]} - {r[1]} вакансий")
+        conn.close()
+
+    @classmethod
+    def get_all_vacancies(cls, database_name):
+        params = config()
+        conn = psycopg2.connect(dbname=database_name, **params)
+        with conn.cursor() as cur:
+            cur.execute("""
+            SELECT
+            employers.employer_name,
+            vacancies.vacancy_name,
+            vacancies.salary_from,
+            vacancies.salary_to,
+            vacancies.vacancy_url
+            FROM employers
+            JOIN vacancies USING (employer_id)
+            """)
+            response = cur.fetchall()
+        for r in response:
+            print(f"{r[0]} / {r[1]} / {r[2]}-{r[3]} RUR / ссылка {r[4]}")
+
+    @classmethod
+    def get_avg_salary(cls, database_name):
+        params = config()
+        conn = psycopg2.connect(dbname=database_name, **params)
+        with conn.cursor() as cur:
+            cur.execute("""
+            SELECT AVG((salary_from + salary_to)/2)
+            FROM vacancies
+            """)
+            response = cur.fetchall()
+        print(f"Средняя запрлата по всем вакансиям базы данных - {round(response[0][0])} рублей")
+
+    @classmethod
+    def get_vacancies_with_higher_salary(cls, database_name):
+        params = config()
+        conn = psycopg2.connect(dbname=database_name, **params)
+        with conn.cursor() as cur:
+            cur.execute("""SELECT 
+            employers.employer_name,
+            vacancies.vacancy_name,
+            vacancies.salary_from,
+            vacancies.salary_to,
+            vacancies.vacancy_url
+            FROM employers
+            JOIN vacancies USING (employer_id)
+            WHERE ((vacancies.salary_from + vacancies.salary_to)/2) >
+            (SELECT AVG((salary_from + salary_to)/2) FROM vacancies)""")
+            response = cur.fetchall()
+        cls.get_avg_salary(database_name)
+        print("\nЗарпалата по данным вакансиям выше средней по всей базе:\n")
+        for r in response:
+            print(f"{r[0]} / {r[1]} / {r[2]}-{r[3]} RUR / ссылка {r[4]}")
+
+    @classmethod
+    def get_vacancies_with_keyword(cls, database_name, query):
+        params = config()
+        conn = psycopg2.connect(dbname=database_name, **params)
+        with conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT
+            employers.employer_name,
+            vacancies.vacancy_name,
+            vacancies.salary_from,
+            vacancies.salary_to,
+            vacancies.vacancy_url
+            FROM employers
+            JOIN vacancies USING (employer_id)
+            WHERE vacancies.vacancy_name LIKE '%{query.lower()}%'
+            """)
+            response = cur.fetchall()
+        if not response:
+            print("\nПо вашему запросу ничего не найдено\n")
+        else:
+            print("\nПо вашему запросу найдены следующие вакансии:\n")
+            for r in response:
+                print(f"{r[0]} / {r[1]} / {r[2]}-{r[3]} RUR / ссылка {r[4]}")
