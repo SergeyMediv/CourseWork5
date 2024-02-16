@@ -1,6 +1,5 @@
 from cfg import config
-from cls import DBManager
-from utils import create_database, save_data_to_database
+from utils import create_database, save_data_to_database, user_interactive
 
 if __name__ == '__main__':
     employers_ids = ['1226057',  # Полимер-Групп
@@ -19,3 +18,4 @@ if __name__ == '__main__':
 
     create_database("cw_5", params)
     save_data_to_database(employers_ids, "cw_5", params)
+    user_interactive("cw_5")
