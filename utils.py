@@ -1,6 +1,6 @@
 import psycopg2
 
-from cls import Employer, Vacancy
+from cls import Employer, Vacancy, DBManager
 
 
 def create_database(database_name: str, params: dict) -> None:
@@ -74,3 +74,36 @@ def save_data_to_database(employers_ids: list, database_name, params: dict):
 
         conn.commit()
         conn.close()
+
+
+def user_interactive(database_name):
+    while True:
+        print("1. Вывести список работодателей в базе с количеством вакансий")
+        print("2. Вывести список всех вакансий в базе")
+        print("3. Вывести среднюю зарплату по всем вакансиям")
+        print("4. Вывести список вакансий с зарплатой выше средней по базе")
+        print("5. Вывести список вакансий с ключевым словом в названии")
+        print("0. Выход")
+        user_input = int(input("Введите ваш выбор: "))
+        if user_input == 1:
+            DBManager.get_companies_and_vacancies_count(database_name)
+            break
+        elif user_input == 2:
+            DBManager.get_all_vacancies(database_name)
+            break
+        elif user_input == 3:
+            DBManager.get_avg_salary(database_name)
+            break
+        elif user_input == 4:
+            DBManager.get_vacancies_with_higher_salary(database_name)
+            break
+        elif user_input == 5:
+            user_keyword = input("Введите ключевое слово: ")
+            DBManager.get_vacancies_with_keyword(database_name, user_keyword)
+            break
+        elif user_input == 0:
+            print("Досвидания!")
+            break
+        else:
+            print("Введите число от 0 до 5")
+            continue
