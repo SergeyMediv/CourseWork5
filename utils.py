@@ -4,7 +4,7 @@ from cls import Employer, Vacancy, DBManager
 
 
 def create_database(database_name: str, params: dict) -> None:
-    """создает базу данных"""
+    """Создает базу данных"""
 
     conn = psycopg2.connect(dbname='postgres', **params)
     conn.autocommit = True
@@ -44,7 +44,7 @@ def create_database(database_name: str, params: dict) -> None:
 
 
 def save_data_to_database(employers_ids: list, database_name, params: dict):
-    """сохраняет данный в базу данных"""
+    """Сохраняет данный в базу данных"""
 
     conn = psycopg2.connect(dbname=database_name, **params)
     with conn.cursor() as cur:
@@ -77,6 +77,8 @@ def save_data_to_database(employers_ids: list, database_name, params: dict):
 
 
 def user_interactive(database_name):
+    """Интерактив с пользователем"""
+
     while True:
         print("1. Вывести список работодателей в базе с количеством вакансий")
         print("2. Вывести список всех вакансий в базе")
