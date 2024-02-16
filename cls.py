@@ -6,6 +6,7 @@ from cfg import EMPLOYERS_URL, VACANCIES_URL
 
 
 class Employer:
+    """Класс работодателя"""
 
     def __init__(self, employer_id: str, employer_name: str, employer_vacancies: int, employer_url: str):
         self.employer_id = employer_id
@@ -15,6 +16,8 @@ class Employer:
 
     @classmethod
     def initiate_from_hh(cls, em_ids: list):
+        """создает список с экземплярами класса по заданным параметрам"""
+
         employers_list = []
         for em_id in em_ids:
             response = requests.get(url=f"{EMPLOYERS_URL}{em_id}").json()
@@ -28,6 +31,7 @@ class Employer:
 
 
 class Vacancy:
+    """Класс вакансии"""
 
     def __init__(self,
                  employer_id: str,
@@ -47,6 +51,8 @@ class Vacancy:
 
     @classmethod
     def initiate_from_hh(cls, employer_id: str):
+        """создает список с экземплярами класса по заданным параметрам"""
+
         params = {
             'page': 0,
             'per_page': 100,
@@ -69,12 +75,15 @@ class Vacancy:
 
     @staticmethod
     def validate_salary_from(salary):
+        """возвращает 0 если не указана минимальная зарплата"""
         if not salary:
             return 0
         return salary
 
     @staticmethod
     def validate_salary_to(salary_from, salary_to):
+        """Возвращает максимальную зарплату равную минимальной, если максимальная не указана"""
+
         if not salary_to:
             salary_to = salary_from
         return salary_to
@@ -84,6 +93,8 @@ class DBManager:
 
     @classmethod
     def get_companies_and_vacancies_count(cls, database_name):
+        """получает список всех компаний и количество вакансий у каждой компании"""
+
         params = config()
         conn = psycopg2.connect(dbname=database_name, **params)
         with conn.cursor() as cur:
@@ -100,6 +111,9 @@ class DBManager:
 
     @classmethod
     def get_all_vacancies(cls, database_name):
+        """получает список всех вакансий с указанием названия компании,
+        названия вакансии и зарплаты и ссылки на вакансию"""
+
         params = config()
         conn = psycopg2.connect(dbname=database_name, **params)
         with conn.cursor() as cur:
@@ -119,6 +133,8 @@ class DBManager:
 
     @classmethod
     def get_avg_salary(cls, database_name):
+        """получает среднюю зарплату по вакансиям"""
+
         params = config()
         conn = psycopg2.connect(dbname=database_name, **params)
         with conn.cursor() as cur:
@@ -131,6 +147,8 @@ class DBManager:
 
     @classmethod
     def get_vacancies_with_higher_salary(cls, database_name):
+        """получает список всех вакансий, у которых зарплата выше средней по всем вакансиям"""
+
         params = config()
         conn = psycopg2.connect(dbname=database_name, **params)
         with conn.cursor() as cur:
@@ -152,6 +170,8 @@ class DBManager:
 
     @classmethod
     def get_vacancies_with_keyword(cls, database_name, query):
+        """получает список всех вакансий, в названии которых содержатся переданные в метод слова"""
+
         params = config()
         conn = psycopg2.connect(dbname=database_name, **params)
         with conn.cursor() as cur:
