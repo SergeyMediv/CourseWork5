@@ -1,5 +1,5 @@
-from cls import Employer, Vacancy
 from cfg import config
+from cls import DBManager
 from utils import create_database, save_data_to_database
 
 if __name__ == '__main__':
