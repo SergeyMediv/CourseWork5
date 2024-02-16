@@ -4,7 +4,7 @@ EMPLOYERS_URL = "https://api.hh.ru/employers/"
 VACANCIES_URL = "https://api.hh.ru/vacancies"
 
 
-def config(filename="database.ini", section="postgresql"):
+def config(filename="db_config.ini", section="postgresql"):
     # create a parser
     parser = ConfigParser()
     # read config file
