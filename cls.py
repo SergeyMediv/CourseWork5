@@ -20,13 +20,16 @@ class Employer:
 
         employers_list = []
         for em_id in em_ids:
-            response = requests.get(url=f"{EMPLOYERS_URL}{em_id}").json()
-            employer_id = response['id']
-            employer_name = response['name']
-            employer_vacancies = response['open_vacancies']
-            employer_url = response['alternate_url']
-            employer = Employer(employer_id, employer_name, employer_vacancies, employer_url)
-            employers_list.append(employer)
+            try:
+                response = requests.get(url=f"{EMPLOYERS_URL}{em_id}").json()
+                employer_id = response['id']
+                employer_name = response['name']
+                employer_vacancies = response['open_vacancies']
+                employer_url = response['alternate_url']
+                employer = Employer(employer_id, employer_name, employer_vacancies, employer_url)
+                employers_list.append(employer)
+            except KeyError:
+                raise KeyError('id not found')
         return employers_list
 
 
