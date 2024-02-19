@@ -100,8 +100,14 @@ def user_interactive(database_name):
             DBManager.get_vacancies_with_higher_salary(database_name)
             break
         elif user_input == 5:
-            user_keyword = input("Введите ключевое слово: ")
-            DBManager.get_vacancies_with_keyword(database_name, user_keyword)
+            while True:
+                user_keyword = input("Введите ключевое слово: ")
+                if not user_keyword:
+                    print("Вы ввели пустой запрос")
+                    continue
+                else:
+                    DBManager.get_vacancies_with_keyword(database_name, user_keyword)
+                    break
             break
         elif user_input == 0:
             print("Досвидания!")
